@@ -1,10 +1,10 @@
 #include "lib_std_facilities.h"
 #include "grid.h"
-#include "graphics.h"
 #include "snake.h"
 #include "fruits.h"
 #include "conio.h"
-#include <Windows.h>
+#include "windows.h"
+
 
 
 bool gameover;
@@ -19,8 +19,6 @@ eDirection dir;
 void Setup(){
     gameover = false;
     dir = STOP;
-    //x = width / 2;
-    //y = height / 2;
     //display fruit in a random place
     fruit_x = rand() % width;
     fruit_y = rand() % height;
@@ -30,78 +28,61 @@ void Setup(){
 
 }
 
-void Draw(){
+void Draw() {
     system("cls");
-    for(int i = 0; i < width+2; i++)
-        cout << "#";
-    cout << endl ;
-    for (int i = 0; i < height ; i++) {
+    for (int i = 0; i < width + 2; i++)
+        cout << "#"; //walls
+    cout << endl;
+    for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             if (j == 0)
                 cout << "#"; //walls
+
             if (i == y && j == x)
-                cout << "*"; // snake tail
-            else if (i == fruit_y && j == fruit_x )
-                cout << "%"; // change it to change the fruit
+                cout << "*"; // snake head
+            else if (i == fruit_y && j == fruit_x)
+                cout << "%"; // fruit
             else {
                 bool print = false;
-                for (int k = 0; k< nTail ; k++) {
-                    if (tail_x [k] == j && tail_y [k] == i) {
-                        cout << "8";
+                for (int k = 0; k < nTail; k++) {
+                    if (tail_x[k] == j && tail_y[k] == i) {
+                        cout << "8"; //snake tail
                         print = true;
                     }
                 }
-                if (!print) cout << " ";
+                if (!print)
+                    cout << " "; //play area
+
             }
-            if (j == width -1)
-                cout << "#";
+            if (j == width - 1)
+                cout << "#"; //walls
+        }
+            cout << endl;
+        }
+
+        for (int i = 0; i < width + 2; i++) {
+            cout << "#"; //walls
         }
         cout << endl;
+        cout << "Score:" << score << endl;
+
     }
 
-    for (int i = 0; i< width+2; i++)
-        cout << "#";
-    cout << endl;
-    cout << "Score:" << score << endl ;
-}
-
-void Input(){
-    if (_kbhit ()) {
-        switch (_getch ()) {
-            case 'a':
-                dir = LEFT;
-                break;
-            case 'd':
-                dir = RIGHT;
-                break;
-            case 'w':
-                dir = UP;
-                break;
-            case 's':
-                dir = DOWN ;
-                break;
-            case 'x':
-                gameover = true;
-                break;
-        }
-    }
-}
-
-void algorithm() {
-    int prevX = tail_x[0];
-    int prevY = tail_y[0];
-    int prev2X, prev2Y;
+void game() {
+    int prev_x = tail_x[0];
+    int prev_y = tail_y[0];
+    int prev_2x, prev_2y;
     tail_x[0] = x;
     tail_y[0] = y;
-    for (int i = 1; i < nTail; i++) {
-        prev2X = tail_x[i];
-        prev2Y = tail_y[i];
-        tail_x[i] = prevX;
-        tail_y[i] = prevY;
-        prevX = prev2X;
-        prevY = prev2Y;
+    for (int i = 1; i < nTail; i++){
+        prev_2x = tail_x[i];
+        prev_2y = tail_y[i];
+        tail_x[i] = prev_x;
+        tail_y[i] = prev_y;
+        prev_x = prev_2x;
+        prev_y = prev_2y;
     }
-    switch (dir) {
+    switch (dir){
         case LEFT:
             x--;
             break;
@@ -117,27 +98,28 @@ void algorithm() {
         default:
             break;
     }
-    if (x >= width) {
+    if (x >= width){
         x = 0;
-    } else if (x < 0) {
+    } else if (x < 0){
         x = width - 1;
     }
-    if (y >= height) {
+    if (y >= height){
         y = 0;
-    } else if (y < 0) {
+    } else if (y < 0){
         y = height - 1;
     }
 
-    if (x == fruit_x && y == fruit_y) {
+    if (x == fruit_x && y == fruit_y){
         score += 10;
         fruit_x = rand() % width;
         fruit_y = rand() % height;
         nTail++;
     }
     //gameover statements
-    for (int i = 0; i < nTail; i++) {
-        if (tail_x[i] == x && tail_y[i] == y) {
+    for (int i = 0; i < nTail; i++){
+        if (tail_x[i] == x && tail_y[i] == y){
             gameover = true;
+            cout << "You ran into a wall";
         }
     }
     if (tail_x[0] == width -1 || tail_y[0] == width -1){
@@ -148,46 +130,28 @@ void algorithm() {
     }
 
 
+
+
 }
 
-
-void search_algorithm() {
-    int current_x = tail_x[0];
-    int current_y = tail_y[0];
-    int target_x = fruit_x;
-    int target_y = fruit_y;
-    int snake_coor[2] = {current_x, current_y};
-    int fruit_coor[2] = {fruit_x, fruit_y};
-    int target_coor[2] = {fruit_coor[0] + snake_coor[0], fruit_coor[1] + snake_coor[1]};
-    cout << "X_fruit : " << fruit_coor[0] << "Y_fruit : " << fruit_coor[1] << endl;
-    cout << "snake_x : " << snake_coor[0] << "snake_y : " << snake_coor[1] << endl;
-    cout << "path_x : " << target_coor[0] << "target_y : " << target_coor[1] << endl;
-    bool variable_match = target_coor[0] == snake_coor[0];
-    cout << variable_match;
-
-    if (target_coor[0] != 0) {
-        while (target_coor[0] != 0) {
-            if (target_coor[0] < 0) {
+void Input(){
+    if (_kbhit ()){
+        switch (_getch ()){
+            case 'a':
                 dir = LEFT;
                 break;
-            }
-            if (target_coor[0] > 0) {
+            case 'd':
                 dir = RIGHT;
                 break;
-            }
-            break;
-        }
-    } else if (target_coor[0] == 0 && target_coor[1] != 0) {
-        while (target_coor[1] != 0) {
-            if (target_coor[1] < 0) {
-                dir = DOWN;
-                break;
-            }
-            if (target_coor[1] > 0) {
+            case 'w':
                 dir = UP;
                 break;
-            }
-            break;
+            case 's':
+                dir = DOWN;
+                break;
+            case 'x':
+                gameover = true;
+                break;
         }
     }
 }
@@ -195,11 +159,52 @@ void search_algorithm() {
 
 
 
+void search_algorithm() {
+    int current_x = tail_x[0];
+    int current_y = tail_y[0];
+    int snake_coor[2] = {current_x, current_y};
+    int fruit_coor[2] = {fruit_x, fruit_y};
+    int target_coor[2] = {fruit_coor[0] - snake_coor[0], fruit_coor[1] - snake_coor[1]};
+    cout << "X_fruit : " << fruit_coor[0] << "Y_fruit : " << fruit_coor[1] << endl;
+    cout << "snake_x : " << snake_coor[0] << "snake_y : " << snake_coor[1] << endl;
+    cout << "path_x : " << target_coor[0] << "path_y : " << target_coor[1] << endl;
 
 
-
-
-
+        if (target_coor[0] < -1){
+            if (tail_x[0] - 1 != 0 && tail_x[0] - 1 != width + 2) {
+                dir = LEFT;
+            }
+            else{
+                dir = RIGHT;
+            }
+        }
+        if (target_coor[0] > -1){
+            if (tail_x[0] + 1 != 0 && tail_x[0] + 1 != width + 2) {
+                dir = RIGHT;
+            }
+            else{
+                dir = LEFT;
+            }
+        }
+        if (target_coor[0] == 1 && target_coor[1] != 0) {
+            if (target_coor[1] < 1){
+                if (tail_y[0] + 1 != -1 && tail_y[1] + 1 != height + 2) {
+                    dir = UP;
+                }
+                else{
+                    dir = DOWN;
+                }
+            }
+            if (target_coor[1] > 1){
+                if (tail_y[1] + 1 != -1 && tail_y[1] + 1 != height + 2){
+                    dir = DOWN;
+                }
+                else {
+                    dir = UP;
+                }
+            }
+        }
+}
 
 
 
@@ -207,18 +212,34 @@ void search_algorithm() {
 
 int main(){
     Setup();
+    cout << "Do you want to let the AI play snake? (yes/no) " << endl;
+    string choice;
+    cin >> choice;
 
-    while (!gameover) {
-        Draw();
-        Input ();
-        algorithm ();
-        search_algorithm();
-        Sleep(200);
+    if (choice == "yes") {
+        while (!gameover) {
+            Draw();
+            Input();
+            game();
+            search_algorithm();
+            Sleep(200);
+
+        }
+    }
+    if (choice == "no"){
+        while (!gameover) {
+            Draw();
+            Input();
+            game();
+            Sleep(200);
+
+        }
 
     }
+
 
     return 0;
 
 }
-// 20x20 grid
-//
+
+
