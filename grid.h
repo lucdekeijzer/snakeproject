@@ -43,3 +43,4 @@ void Grid::draw_grid(){
 }
 
 #endif //SNAKEPROJECT_GRID_H
+
