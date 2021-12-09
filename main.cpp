@@ -5,14 +5,14 @@
 #include "conio.h"
 #include "windows.h"
 
-
+//TODO: Functions header file
 
 bool gameover;
 const int width = 20;
 const int height = 20;
 int x, y, fruit_x, fruit_y, score;
 int tail_x[100], tail_y[100]; //snake coordinates
-int nTail;
+int n_tail;
 enum eDirection {STOP = 0, LEFT,RIGHT, UP, DOWN}; // Controls
 eDirection dir;
 
@@ -44,7 +44,7 @@ void Draw() {
                 cout << "%"; // fruit
             else {
                 bool print = false;
-                for (int k = 0; k < nTail; k++) {
+                for (int k = 0; k < n_tail; k++) {
                     if (tail_x[k] == j && tail_y[k] == i) {
                         cout << "8"; //snake tail
                         print = true;
@@ -74,7 +74,7 @@ void game() {
     int prev_2x, prev_2y;
     tail_x[0] = x;
     tail_y[0] = y;
-    for (int i = 1; i < nTail; i++){
+    for (int i = 1; i < n_tail; i++){
         prev_2x = tail_x[i];
         prev_2y = tail_y[i];
         tail_x[i] = prev_x;
@@ -113,20 +113,22 @@ void game() {
         score += 10;
         fruit_x = rand() % width;
         fruit_y = rand() % height;
-        nTail++;
+        n_tail++;
     }
     //gameover statements
-    for (int i = 0; i < nTail; i++){
+    for (int i = 0; i < n_tail; i++){
         if (tail_x[i] == x && tail_y[i] == y){
             gameover = true;
-            cout << "You ran into a wall";
+            cout << "Game over! Your final score = " << score;
         }
     }
     if (tail_x[0] == width -1 || tail_y[0] == width -1){
         gameover = true;
+        cout << "Game over! Your final score = " << score;
     }
     if (tail_x[0] == height -1 || tail_y[0] == height -1){
         gameover = true;
+        cout << "Game over! Your final score = " << score;
     }
 
 
