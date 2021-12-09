@@ -5,8 +5,7 @@
 #include "conio.h"
 #include "windows.h"
 
-//TODO: Functions header file
-
+//Global variables
 bool gameover;
 const int width = 20;
 const int height = 20;
@@ -23,9 +22,6 @@ void Setup(){
     fruit_x = rand() % width;
     fruit_y = rand() % height;
     score = 0;
-
-
-
 }
 
 void Draw() {
@@ -57,18 +53,19 @@ void Draw() {
             if (j == width - 1)
                 cout << "#"; //walls
         }
-            cout << endl;
-        }
-
-        for (int i = 0; i < width + 2; i++) {
-            cout << "#"; //walls
-        }
         cout << endl;
-        cout << "Score:" << score << endl;
-
     }
 
+    for (int i = 0; i < width + 2; i++) {
+        cout << "#"; //walls
+    }
+    cout << endl;
+    cout << "Score:" << score << endl;
+}
+
 void game() {
+    //assigning the x and y coordinates to the snake, to reference to them later when using the wall detection
+    //and in the AI part of the code
     int prev_x = tail_x[0];
     int prev_y = tail_y[0];
     int prev_2x, prev_2y;
@@ -82,6 +79,7 @@ void game() {
         prev_x = prev_2x;
         prev_y = prev_2y;
     }
+    //Stating what the directions are the snake can move and what these directions do
     switch (dir){
         case LEFT:
             x--;
@@ -109,6 +107,8 @@ void game() {
         y = height - 1;
     }
 
+    //respawning the fruit at a random place on the board when it's eaten
+    //also growing the snake tail
     if (x == fruit_x && y == fruit_y){
         score += 10;
         fruit_x = rand() % width;
@@ -130,13 +130,11 @@ void game() {
         gameover = true;
         cout << "Game over! Your final score = " << score;
     }
-
-
-
-
 }
 
 void Input(){
+    //Using kbhit and getch from the conio library to register keyboard hits and
+    //their respective functions.
     if (_kbhit ()){
         switch (_getch ()){
             case 'a':
@@ -158,20 +156,21 @@ void Input(){
     }
 }
 
-
-
-
 void search_algorithm() {
     int current_x = tail_x[0];
     int current_y = tail_y[0];
     int snake_coor[2] = {current_x, current_y};
     int fruit_coor[2] = {fruit_x, fruit_y};
     int target_coor[2] = {fruit_coor[0] - snake_coor[0], fruit_coor[1] - snake_coor[1]};
-    cout << "X_fruit : " << fruit_coor[0] << "Y_fruit : " << fruit_coor[1] << endl;
-    cout << "snake_x : " << snake_coor[0] << "snake_y : " << snake_coor[1] << endl;
-    cout << "path_x : " << target_coor[0] << "path_y : " << target_coor[1] << endl;
+    //For development, these coordinates were printed on the screen so I could see if
+    //everthing was going well
 
+    //cout << "X_fruit : " << fruit_coor[0] << "Y_fruit : " << fruit_coor[1] << endl;
+    //cout << "snake_x : " << snake_coor[0] << "snake_y : " << snake_coor[1] << endl;
+    //cout << "path_x : " << target_coor[0] << "path_y : " << target_coor[1] << endl;
 
+        //To figure out where the snake should move, it looks at the target coordinates
+        //and performs logic based actions according to those coordinates
         if (target_coor[0] < -1){
             if (tail_x[0] - 1 != 0 && tail_x[0] - 1 != width + 2) {
                 dir = LEFT;
@@ -207,10 +206,6 @@ void search_algorithm() {
             }
         }
 }
-
-
-
-
 
 int main(){
     Setup();
