@@ -122,10 +122,12 @@ void game() {
     //gameover statements
     for (int i = 0; i < n_tail; i++){
         if (tail_x[i] == x && tail_y[i] == y){
+            //if the snake touches itself the game is over
             gameover = true;
             cout << "Game over! Your final score = " << score;
         }
     }
+    //If the snake touches the walls on either side, the game is over
     if (tail_x[0] == width -1 || tail_y[0] == width -1){
         gameover = true;
         cout << "Game over! Your final score = " << score;
