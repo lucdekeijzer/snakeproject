@@ -1,7 +1,4 @@
 #include "lib_std_facilities.h"
-#include "grid.h"
-#include "snake.h"
-#include "fruits.h"
 #include "conio.h"
 #include "windows.h"
 
@@ -26,13 +23,18 @@ void Setup(){
 
 void Draw() {
     system("cls");
+    //place walls on both sides of the grid
+
     for (int i = 0; i < width + 2; i++)
-        cout << "#"; //walls
+        cout << "#";
     cout << endl;
-    for (int i = 0; i < height; i++) {
+
+    //place walls on both sides of the grid
+        for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             if (j == 0)
-                cout << "#"; //walls
+
+                cout << "#";
 
             if (i == y && j == x)
                 cout << "*"; // snake head
@@ -46,18 +48,20 @@ void Draw() {
                         print = true;
                     }
                 }
+                //leave the play area clean if print == false
                 if (!print)
-                    cout << " "; //play area
+                    cout << " ";
 
             }
             if (j == width - 1)
-                cout << "#"; //walls
+                cout << "#";
         }
         cout << endl;
     }
 
+    //place walls on the bottom layer of the grid
     for (int i = 0; i < width + 2; i++) {
-        cout << "#"; //walls
+        cout << "#";
     }
     cout << endl;
     cout << "Score:" << score << endl;
@@ -162,16 +166,12 @@ void search_algorithm() {
     int snake_coor[2] = {current_x, current_y};
     int fruit_coor[2] = {fruit_x, fruit_y};
     int target_coor[2] = {fruit_coor[0] - snake_coor[0], fruit_coor[1] - snake_coor[1]};
-    //For development, these coordinates were printed on the screen so I could see if
-    //everthing was going well
-
-    //cout << "X_fruit : " << fruit_coor[0] << "Y_fruit : " << fruit_coor[1] << endl;
-    //cout << "snake_x : " << snake_coor[0] << "snake_y : " << snake_coor[1] << endl;
-    //cout << "path_x : " << target_coor[0] << "path_y : " << target_coor[1] << endl;
 
         //To figure out where the snake should move, it looks at the target coordinates
         //and performs logic based actions according to those coordinates
         if (target_coor[0] < -1){
+            //go left if the target X coordinate is less than -1 and do the opposite if it's not
+            //Also, check if that next block isn't a wall
             if (tail_x[0] - 1 != 0 && tail_x[0] - 1 != width + 2) {
                 dir = LEFT;
             }
@@ -180,6 +180,8 @@ void search_algorithm() {
             }
         }
         if (target_coor[0] > -1){
+            //go right if the target X coordinate is bigger than -1 and do the opposite if it's not
+            //Also, check if that next block isn't a wall
             if (tail_x[0] + 1 != 0 && tail_x[0] + 1 != width + 2) {
                 dir = RIGHT;
             }
@@ -189,6 +191,8 @@ void search_algorithm() {
         }
         if (target_coor[0] == 1 && target_coor[1] != 0) {
             if (target_coor[1] < 1){
+                //go up if the target Y coordinate is less than 1 and do the opposite if it's not
+                //Also, check if that next block isn't a wall
                 if (tail_y[0] + 1 != -1 && tail_y[1] + 1 != height + 2) {
                     dir = UP;
                 }
@@ -197,6 +201,8 @@ void search_algorithm() {
                 }
             }
             if (target_coor[1] > 1){
+                //go down if the target Y coordinate is more than 1 and the opposite if it's not
+                //Also, check if that next block isn't a wall
                 if (tail_y[1] + 1 != -1 && tail_y[1] + 1 != height + 2){
                     dir = DOWN;
                 }
